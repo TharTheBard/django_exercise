@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-2zrqvn@-edd9d8#-kz$wt=+=!%o&ipd6g9(rx4-pnif%b=6*#-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -81,8 +81,8 @@ LOGGING = {  # see https://www.python.org/dev/peps/pep-0391/
     'handlers': {
         'syslog': {
             'class': 'logging.handlers.SysLogHandler',
-            # 'address': ('rsyslog', 514),
-            'address': "/dev/log",
+            'address': ('rsyslog', 514),
+            # 'address': "/dev/log",
             'facility': "local5",
             'formatter': 'general', }
     },
@@ -102,11 +102,14 @@ WSGI_APPLICATION = 'django_exercise.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

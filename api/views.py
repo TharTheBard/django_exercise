@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger("api")
 
+
 # import/
 @api_view(["POST"])
 def import_records(request):
@@ -26,9 +27,11 @@ def import_records(request):
             record_creation_counter += 1
 
     if record_creation_counter == 0:
+        logger.error(f"Import_records could not upload any of the provided data: {errors}")
         Response({"message": "No objects were uploaded", "errors": errors}, 400)
 
     if len(errors) > 0:
+        logger.error(f"Get_record could not upload some of the provided records: {errors}.")
         return Response({
             "message": f"There were errors in upload. Uploaded {record_creation_counter} records.", "errors": {errors}
         }, 207)
@@ -41,6 +44,7 @@ def import_records(request):
 def list_records(request, model_name):
     serializer_class = get_serializer(model_name)
     if not serializer_class:
+        logger.error("List_records could not retrieve the model.")
         return Response({"message": "No such model found."}, 404)
 
     serializer = serializer_class(serializer_class.Meta.model.objects.all(), many=True)
@@ -50,14 +54,15 @@ def list_records(request, model_name):
 # detail/<model_name>/<pk>
 @api_view(["GET"])
 def get_record(request, model_name, pk):
-    logger.info("detail")
     serializer_class = get_serializer(model_name)
     if not serializer_class:
+        logger.error("Get_record could not retrieve the model.")
         return Response({"message": "No such model found."}, 404)
 
     try:
         serializer = serializer_class(serializer_class.Meta.model.objects.get(id=pk), many=False)
     except serializer_class.Meta.model.DoesNotExist:
+        logger.error(f"Get_record could not retrieve a record of model {model_name}.")
         return Response({"message": f"This {model_name} record does not exist."}, 400)
 
     return Response({"message": "Data retrieved successfully.", "data": serializer.data}, 200)

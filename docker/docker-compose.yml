@@ -1,0 +1,33 @@
+version: '3'
+services:
+
+  django-exercise:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: django-exercise
+    ports:
+      - "8000:8000"
+    image: zoldak/django-exercise:1.0
+    depends_on:
+      - db
+      - rsyslog
+
+  db:
+    image: postgres:13.0-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=django_exercise
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  rsyslog:
+    image: vimagick/rsyslog
+    volumes:
+      - ./log:/var/log
+    restart: always
+    ports:
+      - "514:514/udp"
